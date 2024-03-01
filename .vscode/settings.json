@@ -1,0 +1,7 @@
+{
+    "cmake.sourceDirectory": "/home/gushikem01/work/usa-kabu-jobs/.vscode",
+    "rust-analyzer.linkedProjects": [
+        "./Cargo.toml"
+    ],
+    "rust-analyzer.showUnlinkedFileNotification": false
+}
