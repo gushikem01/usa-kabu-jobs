@@ -16,6 +16,4 @@ fn main () {
 
     let _result = stocks_service.create_stocks();
 
-    println!("Stocks created");
-
 }

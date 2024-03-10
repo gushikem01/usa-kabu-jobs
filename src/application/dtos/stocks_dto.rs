@@ -1,23 +1,11 @@
-use crate::domain::entities::stocks::Stocks;
+use serde::Deserialize;
 
-#[derive(Debug)]
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize)]
 pub struct StocksDTO {
     pub symbol: String,
-    pub name : String,
-    pub exchange: String,
-    pub exchange_short_name: String,
-    pub is_etf: bool,
+    pub name : Option<String>,
+    pub exchange: Option<String>,
+    pub exchangeShortName: Option<String>,
+    pub r#type: Option<String>,
 }
-
-impl From<Stocks> for StocksDTO {
-    fn from(stocks: Stocks) -> Self {
-        StocksDTO {
-            symbol: stocks.symbol.clone(),
-            name: stocks.name.clone(),
-            exchange: stocks.exchange.clone(),
-            exchange_short_name: stocks.exchange_short_name.clone(),
-            is_etf: stocks.is_etf,
-        }
-    }
-}
-

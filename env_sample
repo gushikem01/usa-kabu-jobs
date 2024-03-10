@@ -1,0 +1,5 @@
+DATABASE_URL=postgresql://postgres:postgres@localhost:25432/postgres
+
+# get and set api key from financialmodelingprep.com
+
+FMP_API_KEY=

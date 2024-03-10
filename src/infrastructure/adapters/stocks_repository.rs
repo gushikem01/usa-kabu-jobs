@@ -1,9 +1,11 @@
 use diesel::pg::PgConnection;
 use diesel::{Connection, RunQueryDsl};
-use crate::application::dtos::stocks_dto::StocksDTO;
-use crate::domain::entities::stocks::NewStocks;
+use crate::domain::entities::stocks::Stocks;
+use crate::infrastructure::models::stocks::NewStocks;
 use crate::domain::repositories::stocks_repository::StocksRepository;
 use crate::schema::stocks;
+
+const CHUNK_SIZE: i32 = 10000;
 
 pub struct StocksRepositoryImpl {
     pub pg_conn: PgConnection,
@@ -18,27 +20,38 @@ impl StocksRepositoryImpl {
 }
 
 impl StocksRepository for StocksRepositoryImpl {
-    fn create_stocks(&mut self, dtos: StocksDTO) -> Result<(), String> {
+    fn create_stocks(&mut self, stocks: Vec<Stocks>) -> Result<(), String> {
+        let chunks = stocks.chunks(CHUNK_SIZE as usize);
 
-        let new_stocks = NewStocks {
-            symbol: dtos.symbol.clone(),
-            name: dtos.name.clone(),
-            exchange: dtos.exchange.clone(),
-            exchange_short_name: dtos.exchange_short_name.clone(),
-            is_etf: dtos.is_etf,
-        };
+        for chunk in chunks {
+            let new_stocks: Vec<NewStocks> = chunk.into_iter().map(|stock| {
+                NewStocks {
+                    symbol: stock.symbol.clone(),
+                    name: Some(stock.name.clone()),
+                    exchange: stock.exchange.clone(),
+                    exchange_short_name: stock.exchange_short_name.clone(),
+                    is_etf: stock.is_etf,
+                }
+            }).collect();
 
-        let _ = self.pg_conn.transaction::<_, diesel::result::Error, _>(|conn| {
-            let _res = diesel::insert_into(stocks::table)
-                .values(&new_stocks)
-                .execute(conn)?;
+            let res = self.pg_conn.transaction::<_, diesel::result::Error, _>(|conn| {
 
-                println!("{:?}", _res);
-            Ok(())
+                let res = diesel::insert_into(stocks::table)
+                    .values(&new_stocks)
+                    .execute(conn)?;
 
-        });
+                match res {
+                    0 => Err(diesel::result::Error::NotFound),
+                    _ => Ok(()),
+                }
+            });
+
+            match res {
+                Ok(_) => continue,
+                Err(e) => return Err(e.to_string()),
+            }
+        }
 
         Ok(())
-
     }
 }

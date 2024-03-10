@@ -1,36 +1,13 @@
 # usa-kabu-jobs
 
-this is a project to get the stock information of the US stock market.
-using the financialmodelingprep API.
-the database is postgresql.
-the language is rust.
-the architecture is clean architecture.
-but it is not a strict clean architecture.
+## What is this?
 
-## Description
+- This is a rust project to get stock data from financialmodelingprep.com and save it to database.
 
-```
-project_name
-│
-├───src
-│    ├───application # application
-│    │       ├───dtos # DTO（Data Transfer Object）
-│    │       ├───services # service (application layer)
-│    │       └───usecases # usecase (application layer)
-│    │
-│    ├───domain # domain layer
-│    │       ├───entities # entity (domain layer)
-│    │       ├───repositories # repository (domain layer)
-│    │       └───value_objects # value object (domain layer)
-│    │
-│    └───infrastructure # infrastructure layer
-│            ├───config # configuration
-│            ├───database # database
-│            ├───external # external
-│            └───logging
-│
-└────tests
-```
+## How to use
+
+- You need to get an API key from financialmodelingprep.com and set it to the environment variable `FMP_API_KEY`.
+- You need to set the environment variable `DATABASE_URL` to connect to the database.
 
 ## API Documents
 
@@ -40,19 +17,27 @@ https://financialmodelingprep.com/developer/docs/
 
 https://financialmodelingprep.com/api/v3/stock/list?apikey={apikey}
 
-## command
+## How to install diesel_cli
+
+1. Install diesel_cli
 
 ```bash
 cargo install diesel_cli --no-default-features --features postgres
 ```
 
+2. Set the environment variable `DATABASE_URL` to connect to the database.
+
 ```bash
 diesel setup
 ```
 
+3. Create a migration file
+
 ```bash
 diesel migration generate stocks
 ```
+
+4. Run the migration
 
 ```bash
 diesel migration run
