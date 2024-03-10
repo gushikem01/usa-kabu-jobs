@@ -7,6 +7,7 @@ diesel::table! {
         symbol -> Varchar,
         #[max_length = 255]
         name -> Varchar,
+        price -> Numeric,
         #[max_length = 255]
         exchange -> Varchar,
         #[max_length = 255]

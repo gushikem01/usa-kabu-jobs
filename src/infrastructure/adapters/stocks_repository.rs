@@ -28,6 +28,7 @@ impl StocksRepository for StocksRepositoryImpl {
                 NewStocks {
                     symbol: stock.symbol.clone(),
                     name: Some(stock.name.clone()),
+                    price: Some(stock.price.clone()),
                     exchange: stock.exchange.clone(),
                     exchange_short_name: stock.exchange_short_name.clone(),
                     is_etf: stock.is_etf,
