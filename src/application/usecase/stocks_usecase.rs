@@ -1,9 +1,8 @@
 use crate::domain::entities::stocks::Stocks;
 use crate::domain::repositories::stocks_repository::StocksRepository;
-use crate::application::dtos::stocks_dto::{StocksDTO};
+use crate::application::dtos::stocks_dto::StocksDTO;
+use crate::utils::strings::f64_to_bigdecimal;
 use std::env;
-use bigdecimal::BigDecimal;
-use std::str::FromStr;
 
 pub struct StocksService {
     stocks_repository: Box<dyn StocksRepository>,
@@ -21,29 +20,42 @@ impl StocksService {
         let url = format!("https://financialmodelingprep.com/api/v3/stock/list?apikey={}", api_key.to_owned());
         let response = reqwest::blocking::get(&url).unwrap();
 
-        let stocks: Vec<StocksDTO> = response.json().unwrap();
+        let stocks_dto: Vec<StocksDTO> = response.json().unwrap();
 
-        let stocks: Vec<Stocks> = stocks.into_iter().map(|stock: StocksDTO| {
+        let mut stocks_exists = self.stocks_repository.find_all().unwrap();
+
+        let mut new_stocks: Vec<Stocks> = Vec::new();
+        for stock in stocks_dto {
+
+            let mut exists = false;
+
+            for stock_exist in stocks_exists.iter() {
+                if stock_exist.symbol == stock.symbol {
+                    exists = true;
+                    stocks_exists.remove(stocks_exists.iter().position(|x| x.symbol == stock.symbol).unwrap());
+                    break;
+                }
+            }
+
+            if exists {
+                continue;
+            }
 
             let price_decimal = f64_to_bigdecimal(stock.price.unwrap_or(0.0));
-
-            Stocks {
+            let new_stock = Stocks {
                 symbol: stock.symbol,
                 name: stock.name.unwrap_or("".to_string()),
                 price: price_decimal,
                 exchange: stock.exchange.unwrap_or("".to_string()),
                 exchange_short_name: stock.exchangeShortName.unwrap_or("".to_string()),
                 is_etf: stock.r#type.unwrap_or("".to_string()) == "etf",
-            }
-        }).collect();
+            };
 
-        let _res = self.stocks_repository.create_stocks(stocks);
+            new_stocks.push(new_stock);
+        }
+
+        let _res = self.stocks_repository.create_stocks(new_stocks);
 
         Ok(())
     }
-
-}
-
-fn f64_to_bigdecimal(num: f64) -> BigDecimal {
-    BigDecimal::from_str(&num.to_string()).unwrap()
 }

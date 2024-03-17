@@ -1,6 +1,13 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    schema_migrations (version) {
+        version -> Int8,
+        inserted_at -> Nullable<Timestamp>,
+    }
+}
+
+diesel::table! {
     stocks (id) {
         id -> Uuid,
         #[max_length = 255]
@@ -15,3 +22,8 @@ diesel::table! {
         is_etf -> Bool,
     }
 }
+
+diesel::allow_tables_to_appear_in_same_query!(
+    schema_migrations,
+    stocks,
+);

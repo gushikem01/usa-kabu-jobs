@@ -1,7 +1,8 @@
 use diesel::pg::PgConnection;
+use diesel::query_dsl::methods::SelectDsl;
 use diesel::{Connection, RunQueryDsl};
 use crate::domain::entities::stocks::Stocks;
-use crate::infrastructure::models::stocks::NewStocks;
+use crate::infrastructure::models::stocks::{NewStocks, Stocks as stocks_read};
 use crate::domain::repositories::stocks_repository::StocksRepository;
 use crate::schema::stocks;
 
@@ -24,7 +25,7 @@ impl StocksRepository for StocksRepositoryImpl {
         let chunks = stocks.chunks(CHUNK_SIZE as usize);
 
         for chunk in chunks {
-            let new_stocks: Vec<NewStocks> = chunk.into_iter().map(|stock| {
+            let new_stocks: Vec<NewStocks> = chunk.into_iter().map(|stock: &Stocks| {
                 NewStocks {
                     symbol: stock.symbol.clone(),
                     name: Some(stock.name.clone()),
@@ -55,4 +56,34 @@ impl StocksRepository for StocksRepositoryImpl {
 
         Ok(())
     }
+
+    fn find_all(&mut self) -> Result<Vec<Stocks>, String> {
+        let conn = &mut self.pg_conn;
+
+        use crate::schema::stocks::dsl::*;
+
+        let res = stocks
+            .select((symbol, name, price, exchange, exchange_short_name, is_etf))
+            .load::<stocks_read>(conn);
+
+        match res {
+            Ok(stocks_read) => {
+                let stocks_all: Vec<Stocks> = stocks_read.into_iter().map(|stock: stocks_read| {
+
+                    Stocks {
+                        symbol: stock.symbol,
+                        name: stock.name,
+                        price: stock.price.clone(),
+                        exchange: stock.exchange,
+                        exchange_short_name: stock.exchange_short_name,
+                        is_etf: stock.is_etf,
+                    }
+                }).collect();
+
+                Ok(stocks_all)
+            },
+            Err(e) => Err(e.to_string()),
+        }
+    }
+
 }
