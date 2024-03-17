@@ -15,11 +15,19 @@ diesel::table! {
         #[max_length = 255]
         name -> Varchar,
         price -> Numeric,
+        market_cap -> Numeric,
+        last_dividend -> Numeric,
         #[max_length = 255]
         exchange -> Varchar,
         #[max_length = 255]
         exchange_short_name -> Varchar,
+        #[max_length = 255]
+        website -> Varchar,
+        description -> Text,
+        ipo_date -> Nullable<Date>,
         is_etf -> Bool,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
     }
 }
 

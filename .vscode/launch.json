@@ -26,7 +26,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'usa-kabu-jobs'",
+            "name": "Debug executable 'usa-kabu-jobs' for create_stocks",
             "cargo": {
                 "args": [
                     "build",
@@ -40,6 +40,26 @@
             },
             "args": [
                 "create_stocks",
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'usa-kabu-jobs' for update_company_info",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=usa-kabu-jobs",
+                    "--package=usa-kabu-jobs"
+                ],
+                "filter": {
+                    "name": "usa-kabu-jobs",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "update_company_info",
             ],
             "cwd": "${workspaceFolder}"
         },

@@ -26,5 +26,3 @@ pub struct Stocks {
     pub exchange_short_name: String,
     pub is_etf: bool,
 }
-
-
