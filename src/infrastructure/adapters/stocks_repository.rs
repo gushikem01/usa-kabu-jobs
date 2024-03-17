@@ -63,13 +63,12 @@ impl StocksRepository for StocksRepositoryImpl {
         use crate::schema::stocks::dsl::*;
 
         let res = stocks
-            .select((symbol, name, price, exchange, exchange_short_name, is_etf))
+            .select((id, symbol, name, price, exchange, exchange_short_name, is_etf))
             .load::<stocks_read>(conn);
 
         match res {
             Ok(stocks_read) => {
                 let stocks_all: Vec<Stocks> = stocks_read.into_iter().map(|stock: stocks_read| {
-
                     Stocks {
                         symbol: stock.symbol,
                         name: stock.name,

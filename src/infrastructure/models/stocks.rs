@@ -1,6 +1,7 @@
 use crate::schema::stocks;
 use diesel::{Insertable, Queryable, Selectable};
 use bigdecimal::BigDecimal;
+use uuid::Uuid;
 
 #[derive(Debug, Insertable)]
 #[diesel(table_name = stocks)]
@@ -17,6 +18,7 @@ pub struct NewStocks {
 #[diesel(table_name = stocks)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Stocks {
+    pub id: Uuid,
     pub symbol: String,
     pub name: String,
     pub price: BigDecimal,
