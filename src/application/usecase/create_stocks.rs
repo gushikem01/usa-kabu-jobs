@@ -22,17 +22,17 @@ impl StocksService {
 
         let stocks_dto: Vec<StocksDTO> = response.json().unwrap();
 
-        let mut stocks_exists = self.stocks_repository.find_all().unwrap();
+        let mut stocks_all = self.stocks_repository.find_all().unwrap();
 
         let mut new_stocks: Vec<Stocks> = Vec::new();
         for stock in stocks_dto {
 
             let mut exists = false;
 
-            for stock_exist in stocks_exists.iter() {
+            for stock_exist in stocks_all.iter() {
                 if stock_exist.symbol == stock.symbol {
                     exists = true;
-                    stocks_exists.remove(stocks_exists.iter().position(|x| x.symbol == stock.symbol).unwrap());
+                    stocks_all.remove(stocks_all.iter().position(|x| x.symbol == stock.symbol).unwrap());
                     break;
                 }
             }

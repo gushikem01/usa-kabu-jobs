@@ -13,7 +13,8 @@ use infrastructure::database::establish_connection;
 use infrastructure::adapters::stocks_repository::StocksRepositoryImpl;
 const ARGS_LENGTH: usize = 2;
 
-fn main () {
+#[tokio::main]
+async fn main () {
     let args = std::env::args().collect::<Vec<String>>();
 
     if args.len() < ARGS_LENGTH {
@@ -27,14 +28,16 @@ fn main () {
                 let pool = establish_connection();
                 let stocks_repository = StocksRepositoryImpl::new(pool);
                 let mut stocks_service = StocksService::new(Box::new(stocks_repository));
-                let _result = stocks_service.create_stocks();
+                let _res = stocks_service.create_stocks();
+
                 println!("Stocks created");
             },
             "update_company_info" => {
                 let pool = establish_connection();
                 let stocks_repository = StocksRepositoryImpl::new(pool);
                 let mut update_company_service = UpdateCompanyService::new(Box::new(stocks_repository));
-                let _result = update_company_service.update_company_info();
+                let _res = update_company_service.update_company_info().await;
+
                 println!("Company info updated");
             },
             &_ => {}

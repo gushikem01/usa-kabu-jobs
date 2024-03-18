@@ -1,7 +1,8 @@
 use diesel::pg::PgConnection;
 use diesel::query_dsl::methods::SelectDsl;
 use diesel::{Connection, RunQueryDsl};
-use crate::domain::entities::stocks::Stocks;
+use crate::diesel::query_dsl::methods::GroupByDsl;
+use crate::domain::entities::stocks::{Exchange, Stocks};
 use crate::infrastructure::models::stocks::{NewStocks, Stocks as stocks_read};
 use crate::domain::repositories::stocks_repository::StocksRepository;
 use crate::schema::stocks;
@@ -58,13 +59,11 @@ impl StocksRepository for StocksRepositoryImpl {
     }
 
     fn find_all(&mut self) -> Result<Vec<Stocks>, String> {
-        let conn = &mut self.pg_conn;
-
         use crate::schema::stocks::dsl::*;
 
         let res = stocks
             .select((id, symbol, name, price, exchange, exchange_short_name, is_etf))
-            .load::<stocks_read>(conn);
+            .load::<stocks_read>(&mut self.pg_conn);
 
         match res {
             Ok(stocks_read) => {
