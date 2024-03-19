@@ -24,5 +24,6 @@ pub struct Stocks {
     pub price: BigDecimal,
     pub exchange: String,
     pub exchange_short_name: String,
+    pub market_cap: BigDecimal,
     pub is_etf: bool,
 }

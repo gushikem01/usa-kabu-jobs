@@ -10,11 +10,3 @@ pub struct StocksDTO {
     pub exchangeShortName: Option<String>,
     pub r#type: Option<String>,
 }
-
-#[allow(non_snake_case)]
-#[derive(Debug, Deserialize)]
-pub struct CompanyProfileDTO {
-    pub symbol: String,
-    pub companyName: String,
-    pub price: f64,
-}

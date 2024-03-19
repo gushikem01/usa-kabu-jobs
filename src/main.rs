@@ -28,7 +28,7 @@ async fn main () {
                 let pool = establish_connection();
                 let stocks_repository = StocksRepositoryImpl::new(pool);
                 let mut stocks_service = StocksService::new(Box::new(stocks_repository));
-                let _res = stocks_service.create_stocks();
+                let _res = stocks_service.create_stocks().await;
 
                 println!("Stocks created");
             },

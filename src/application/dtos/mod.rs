@@ -1,1 +1,2 @@
-pub mod stocks_dto;
+pub mod stocks;
+pub mod company_profile;

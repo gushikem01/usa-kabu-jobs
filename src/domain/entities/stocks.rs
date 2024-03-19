@@ -7,5 +7,27 @@ pub struct Stocks {
     pub price: BigDecimal,
     pub exchange: String,
     pub exchange_short_name: String,
+    pub market_cap: BigDecimal,
     pub is_etf: bool
+}
+
+impl Stocks {
+    pub fn new(symbol: String,
+            name: String,
+            price: BigDecimal,
+            exchange: String,
+            exchange_short_name: String,
+            market_cap: BigDecimal,
+            is_etf: bool) -> Self {
+        Stocks {
+            symbol,
+            name,
+            price,
+            exchange,
+            exchange_short_name,
+            market_cap,
+            is_etf
+        }
+    }
+
 }

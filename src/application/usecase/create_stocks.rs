@@ -1,6 +1,6 @@
 use crate::domain::entities::stocks::Stocks;
 use crate::domain::repositories::stocks_repository::StocksRepository;
-use crate::application::dtos::stocks_dto::StocksDTO;
+use crate::application::dtos::stocks::StocksDTO;
 use crate::utils::strings::f64_to_bigdecimal;
 use std::env;
 
@@ -15,14 +15,16 @@ impl StocksService {
         }
     }
 
-    pub fn create_stocks(&mut self) -> Result<(), String> {
+    // create_stocks is a method that fetches stock information from the FMP API
+    pub async fn create_stocks(&mut self) -> Result<(), String> {
         let api_key = env::var("FMP_API_KEY").unwrap().to_owned();
         let url = format!("https://financialmodelingprep.com/api/v3/stock/list?apikey={}", api_key.to_owned());
-        let response = reqwest::blocking::get(&url).unwrap();
 
-        let stocks_dto: Vec<StocksDTO> = response.json().unwrap();
+        let response = reqwest::get(&url).await.unwrap().text().await.unwrap();
 
-        let mut stocks_all = self.stocks_repository.find_all().unwrap();
+        let mut stocks_all: Vec<Stocks> = self.stocks_repository.find_all().unwrap();
+
+        let stocks_dto: Vec<StocksDTO> = serde_json::from_str(&response).unwrap();
 
         let mut new_stocks: Vec<Stocks> = Vec::new();
         for stock in stocks_dto {
@@ -41,15 +43,14 @@ impl StocksService {
                 continue;
             }
 
-            let price_decimal = f64_to_bigdecimal(stock.price.unwrap_or(0.0));
-            let new_stock = Stocks {
-                symbol: stock.symbol,
-                name: stock.name.unwrap_or("".to_string()),
-                price: price_decimal,
-                exchange: stock.exchange.unwrap_or("".to_string()),
-                exchange_short_name: stock.exchangeShortName.unwrap_or("".to_string()),
-                is_etf: stock.r#type.unwrap_or("".to_string()) == "etf",
-            };
+            let new_stock = Stocks::new(
+                stock.symbol,
+                stock.name.unwrap_or("".to_string()),
+                f64_to_bigdecimal(stock.price.unwrap_or(0.0)),
+                stock.exchange.unwrap_or("".to_string()),
+                stock.exchangeShortName.unwrap_or("".to_string()),
+                f64_to_bigdecimal(0 as f64),
+                stock.r#type.unwrap_or("".to_string()) == "etf");
 
             new_stocks.push(new_stock);
         }
