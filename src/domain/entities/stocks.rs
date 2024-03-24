@@ -8,7 +8,8 @@ pub struct Stocks {
     pub exchange: String,
     pub exchange_short_name: String,
     pub market_cap: BigDecimal,
-    pub is_etf: bool
+    pub is_etf: bool,
+    pub is_active: bool
 }
 
 impl Stocks {
@@ -18,7 +19,8 @@ impl Stocks {
             exchange: String,
             exchange_short_name: String,
             market_cap: BigDecimal,
-            is_etf: bool) -> Self {
+            is_etf: bool,
+            is_active: bool) -> Self {
         Stocks {
             symbol,
             name,
@@ -26,7 +28,8 @@ impl Stocks {
             exchange,
             exchange_short_name,
             market_cap,
-            is_etf
+            is_etf,
+            is_active
         }
     }
 

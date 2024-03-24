@@ -50,7 +50,8 @@ impl StocksService {
                 stock.exchange.unwrap_or("".to_string()),
                 stock.exchangeShortName.unwrap_or("".to_string()),
                 f64_to_bigdecimal(0 as f64),
-                stock.r#type.unwrap_or("".to_string()) == "etf");
+                stock.r#type.unwrap_or("".to_string()) == "etf",
+                true);
 
             new_stocks.push(new_stock);
         }

@@ -75,6 +75,7 @@ impl StocksRepository for StocksRepositoryImpl {
                         exchange_short_name: stock.exchange_short_name,
                         market_cap: 0.into(),
                         is_etf: stock.is_etf,
+                        is_active: true,
                     }
                 }).collect();
 
